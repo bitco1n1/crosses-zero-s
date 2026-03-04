@@ -30,6 +30,11 @@ int main()
         {
             if (game_over) {
                 showFinalMessage();
+
+                printf("\nPress Enter to exit...");
+                getchar();          
+                getchar();          
+
                 return 0;
             }
 
@@ -38,8 +43,6 @@ int main()
             if (isGameOver()) {
                 game_over = TRUE;
                 showField();
-                showFinalMessage();
-                return 0;
             }
         }
     }
@@ -72,7 +75,7 @@ void getInput()
     switch (lastMotion)
     {
     case 'X':
-        printf("X player, enter your move: ");
+        printf("X (Crosses) enter your move: ");
         scanf("%d", &motion);
         y = (motion % 10) - 1;
         x = (motion / 10) - 1;
@@ -93,7 +96,7 @@ void getInput()
         lastMotion = 'O';
         break;
     case 'O':
-        printf("O player, enter your move: ");
+        printf("O (Noughts) enter your move: ");
         scanf("%d", &motion);
         y = (motion % 10) - 1;
         x = (motion / 10) - 1;
@@ -164,10 +167,10 @@ void showFinalMessage()
 {
     if (winner == 'X')
     {
-        printf("X wins!\n");
+        printf("Crosses win!\n");
     }
     else
     {
-        printf("O wins!\n");
+        printf("Noughts win!\n");
     }
 }
