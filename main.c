@@ -2,10 +2,11 @@
 #include <windows.h>
 
 char field[3][3] =
-    {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '}};
+{
+    { ' ', ' ', ' ' },
+    { ' ', ' ', ' ' },
+    { ' ', ' ', ' ' }
+};
 
 typedef unsigned char bool;
 #define TRUE 1
@@ -16,8 +17,7 @@ void getInput();
 bool isGameOver();
 void showFinalMessage();
 
-char winner;
-bool game_over = FALSE;
+char winner = ' ';
 
 int main()
 {
@@ -26,10 +26,11 @@ int main()
 
     while (1)
     {
-        showField();
         while (1)
         {
-            if (game_over)
+            showField();
+
+            if (isGameOver())
             {
                 showFinalMessage();
 
@@ -41,12 +42,6 @@ int main()
             }
 
             getInput();
-
-            if (isGameOver())
-            {
-                game_over = TRUE;
-                showField();
-            }
         }
     }
     return 0;
@@ -68,99 +63,106 @@ void showField()
 
 void getInput()
 {
-    if (game_over)
-        return;
-
     static char lastMotion = 'X';
     int motion;
-    int y;
-    int x;
+    int y, x;
 
     switch (lastMotion)
     {
-    case 'X':
-        printf("X (Crosses) enter your move: ");
-        scanf("%d", &motion);
-        y = (motion % 10) - 1;
-        x = (motion / 10) - 1;
-        if (y > 2 || x > 2 || x < 0 || y < 0)
-            getInput();
-        else
+        case 'X':
         {
-            if (field[x][y] == ' ')
+            printf("X (Crosses) enter your move: ");
+            break;
+        }
+        case 'O':
+        {
+            printf("O (Noughts) enter your move: ");
+            break;
+        }
+    }
+
+    if (scanf("%d", &motion) != 1)
+    {
+        while (getchar() != '\n')
+        {
+        }
+        getInput();
+        return;
+    }
+
+    y = (motion % 10) - 1;
+    x = (motion / 10) - 1;
+
+    if (y > 2 || x > 2 || x < 0 || y < 0 || field[x][y] != ' ')
+    {
+        getInput();
+    }
+    else
+    {
+        field[x][y] = lastMotion;
+        switch (lastMotion)
+        {
+            case 'X':
             {
-                field[x][y] = 'X';
-                showField();
+                lastMotion = 'O';
+                break;
             }
-            else
+            case 'O':
             {
-                getInput();
+                lastMotion = 'X';
+                break;
             }
         }
-        lastMotion = 'O';
-        break;
-    case 'O':
-        printf("O (Noughts) enter your move: ");
-        scanf("%d", &motion);
-        y = (motion % 10) - 1;
-        x = (motion / 10) - 1;
-        if (y > 2 || x > 2 || x < 0 || y < 0)
-            getInput();
-        else
-        {
-            if (field[x][y] == ' ')
-            {
-                field[x][y] = 'O';
-                showField();
-            }
-            else
-            {
-                getInput();
-            }
-        }
-        lastMotion = 'X';
-        break;
     }
 }
 
 bool isGameOver()
 {
-    if ((field[0][0] == field[0][1] && field[0][1] == field[0][2] && field[0][0] != ' ') ||
-        (field[0][0] == field[1][0] && field[1][0] == field[2][0] && field[0][0] != ' ') ||
-        (field[1][0] == field[1][1] && field[1][1] == field[1][2] && field[1][0] != ' ') ||
-        (field[2][0] == field[2][1] && field[2][1] == field[2][2] && field[2][0] != ' ') ||
-        (field[0][1] == field[1][1] && field[1][1] == field[2][1] && field[0][1] != ' ') ||
-        (field[0][2] == field[1][2] && field[1][2] == field[2][2] && field[0][2] != ' ') ||
-        (field[0][0] == field[1][1] && field[1][1] == field[2][2] && field[0][0] != ' ') ||
-        (field[0][2] == field[1][1] && field[1][1] == field[2][0] && field[0][2] != ' '))
+    for (int i = 0; i < 3; i++)
+    {
+        if (field[i][0] != ' ' && field[i][0] == field[i][1] && field[i][0] == field[i][2])
+        {
+            winner = field[i][0];
+            return TRUE;
+        }
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (field[0][i] != ' ' && field[0][i] == field[1][i] && field[0][i] == field[2][i])
+        {
+            winner = field[0][i];
+            return TRUE;
+        }
+    }
+
+    if (field[0][0] != ' ' && field[0][0] == field[1][1] && field[1][1] == field[2][2])
     {
         winner = field[0][0];
         return TRUE;
     }
 
-    if ((field[0][0] == field[0][1] && field[0][1] == field[0][2] && field[0][0] == 'X') ||
-        (field[0][0] == field[1][0] && field[1][0] == field[2][0] && field[0][0] == 'X') ||
-        (field[1][0] == field[1][1] && field[1][1] == field[1][2] && field[1][0] == 'X') ||
-        (field[2][0] == field[2][1] && field[2][1] == field[2][2] && field[2][0] == 'X') ||
-        (field[0][1] == field[1][1] && field[1][1] == field[2][1] && field[0][1] == 'X') ||
-        (field[0][2] == field[1][2] && field[1][2] == field[2][2] && field[0][2] == 'X') ||
-        (field[0][0] == field[1][1] && field[1][1] == field[2][2] && field[0][0] == 'X') ||
-        (field[0][2] == field[1][1] && field[1][1] == field[2][0] && field[0][2] == 'X'))
+    if (field[0][2] != ' ' && field[0][2] == field[1][1] && field[1][1] == field[2][0])
     {
-        winner = 'X';
+        winner = field[0][2];
         return TRUE;
     }
 
-    if ((field[0][0] == field[0][1] && field[0][1] == field[0][2] && field[0][0] == 'O') ||
-        (field[0][0] == field[1][0] && field[1][0] == field[2][0] && field[0][0] == 'O') ||
-        (field[1][0] == field[1][1] && field[1][1] == field[1][2] && field[1][0] == 'O') ||
-        (field[2][0] == field[2][1] && field[2][1] == field[2][2] && field[2][0] == 'O') ||
-        (field[0][1] == field[1][1] && field[1][1] == field[2][1] && field[0][1] == 'O') ||
-        (field[0][2] == field[1][2] && field[1][2] == field[2][2] && field[0][2] == 'O') ||
-        (field[0][0] == field[1][1] && field[1][1] == field[2][2] && field[0][0] == 'O') ||
-        (field[0][2] == field[1][1] && field[1][1] == field[2][0] && field[0][2] == 'O'))
+    bool full = TRUE;
+    for (int i = 0; i < 3; i++)
     {
-        winner = 'O';
+        for (int j = 0; j < 3; j++)
+        {
+            if (field[i][j] == ' ')
+            {
+                full = FALSE;
+            }
+        }
+    }
+
+    if (full)
+    {
+        winner = 'D';
         return TRUE;
     }
 
@@ -173,10 +175,12 @@ void showFinalMessage()
     {
         printf("Crosses win!\n");
     }
-    else
+    else if (winner == 'O')
     {
         printf("Noughts win!\n");
     }
+    else if (winner == 'D')
+    {
+        printf("It's a draw!\n");
+    }
 }
-
-
